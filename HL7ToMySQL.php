@@ -83,7 +83,6 @@ class HL7ToMySQL {
     protected function insert_order() {
         $this->get_conn();
         $message = $this->hl7->get_message();
-        //print_r($message);
         $sql = "INSERT INTO lis_order (message_date, patient_id, patient_name, gender, birth_date, lis_number, reference_number, accept_time,request_div) VALUES (:message_date, :patient_id, :patient_name, :gender, :birth_date, :lis_number, :reference_number, :accept_time,:request_div) ON DUPLICATE KEY UPDATE message_date = :message_date , accept_time = :accept_time ";
         //$sql = "INSERT INTO lis_order (message_date, patient_id, patient_name, gender, birth_date, lis_number, reference_number, accept_time,request_div) VALUES (:message_date, :patient_id, :patient_name, :gender, :birth_date, :lis_number, :reference_number, :accept_time,:request_div)";
         $stmt = $this->conn->prepare($sql);
@@ -118,16 +117,16 @@ class HL7ToMySQL {
             switch ($value->name) {
                 case "OBX":
                     if (!is_null($remark)) {
-                        //$remark = $this->insert_result_remark($lis_number, $lis_code, $remark);
+                        $remark = $this->insert_result_remark($lis_number, $lis_code, $remark);
                     }
                     $lis_code = $this->insert_result($lis_number, $value);
                     break;
                 case "NTE":
-                    //$remark .= $value->fields[2] . "\n";
+                    $remark .= $value->fields[2] . "\n";
                     break;
                 default :
                     $lis_code = 0;
-                    //$remark = NULL;
+                    $remark = NULL;
             }
         }
     }
@@ -142,6 +141,7 @@ class HL7ToMySQL {
 
         $test = explode("^", $message->fields[2], 4);
         $validation_time = explode("^", $message->fields[14], 2);
+        /* @var $result_date DATE*/
         $result_date = date('Y-m-d', strtotime($validation_time[1]));
         
         $sql = "INSERT INTO lis_result (lis_number, lis_code, test, lab_code, result_code , result,  unit, normal_range, user_id, technical_time, medical_time, result_date) VALUES (:lis_number, :lis_code, :test, :lab_code, :result_code, :result, :unit, :normal_range, :user_id, :technical_time, :medical_time, :result_date)";
@@ -163,7 +163,7 @@ class HL7ToMySQL {
     }
 
     /**
-     * เพิ่มรายการใหม่ใน lis_result_remark
+     * เพิ่มข้อมูลที่ Remark ของ Test
      * @param int $lis_number
      * @param int $lis_code
      * @param string $remark

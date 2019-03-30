@@ -16,7 +16,7 @@ class HL7File {
     /**
      * พาทและชื่อไฟล์ HL7
      */
-    private $filename = "";
+    //private $filename = "";
 
     /**
      * ออบเจ็คแต่ละ segment
