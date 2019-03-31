@@ -12,12 +12,25 @@ require_once 'HL7ToMySQL.php';
 
 class LISInfinity {
 
+    private $pathDoneTo = "/var/www/mount/hims-doc/lis/past/";
+    private $pathErrorTo = "/var/www/mount/hims-doc/lis/past/";
+
     /**
      * รับค่าพาธโฟลเดอร์ HL7
      * @param string $path_foder
      */
     public function __construct($path_foder) {
         $list_files = glob($path_foder);
+        $this->pathDoneTo .= date('Ymd') . "/done";
+        $this->pathErrorTo .= date('Ymd') . "/error";
+        if (!file_exists($this->pathDoneTo)) {
+            mkdir($this->pathDoneTo, 0744, true);
+        }
+
+        if (!file_exists($this->pathErrorTo)) {
+            mkdir($this->pathErrorTo, 0744, true);
+        }
+
         foreach ($list_files as $filename) {
             printf("$filename size " . filesize($filename) . "  " . date('Ymd H:i:s') . "\n");
             $hl7_2_db = new HL7ToMySQL($filename);
@@ -31,10 +44,6 @@ class LISInfinity {
                 echo $hl7_2_db->error_message . "\n";
             }
         }
-        /**
-         * @todo เรียกโปรแกรมเพื่อแปลง HL7 ส่งเข้า HIMS
-         */
-        
     }
 
     /**
@@ -43,7 +52,7 @@ class LISInfinity {
      */
     private function move_done_file($filename) {
         try {
-            rename($filename, "/var/www/mount/hims-doc/lis/done/" . basename($filename));
+            rename($filename, $this->pathDoneTo . "/" . basename($filename));
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
@@ -55,7 +64,7 @@ class LISInfinity {
      */
     private function move_error_file($filename) {
         try {
-            rename($filename, "/var/www/mount/hims-doc/lis/error/" . basename($filename));
+            rename($filename, $this->pathErrorTo . "/" . basename($filename));
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
@@ -64,4 +73,3 @@ class LISInfinity {
 }
 
 $my = new LISInfinity("/var/www/mount/hims-doc/lis/ResultForTheptarin/*.hl7");
-//$my = new TheptarinInfinity("/var/www/mount/hims-doc/lis/HIMSReadNotDocument/25600411/60040700111_201704111322382331.hl7");
