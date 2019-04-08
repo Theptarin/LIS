@@ -71,5 +71,8 @@ class LISInfinity {
     }
 
 }
-
+/**
+ * find ./ -type f -exec cp '{}' ../ResultForTheptarin/ \;
+ * https://ubuntuforums.org/showthread.php?t=1385966
+ */
 $my = new LISInfinity("/var/www/mount/hims-doc/lis/ResultForTheptarin/*.hl7");
