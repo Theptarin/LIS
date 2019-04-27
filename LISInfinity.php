@@ -38,11 +38,25 @@ class LISInfinity {
              * ย้ายไฟล์ตามสถานะ
              */
             if ($hl7_2_db->error_message == null) {
+                $this->copy_to_hims($filename);
                 $this->move_done_file($filename);
             } else {
+                $this->copy_to_hims($filename);
                 $this->move_error_file($filename);
                 echo $hl7_2_db->error_message . "\n";
             }
+        }
+    }
+
+    /**
+     * ส่งไฟล์ให้ HIMs
+     * @param string $filename
+     */
+    private function copy_to_hims($filename) {
+        try {
+            copy($filename, "/var/www/mount/hims-doc/lis/ResultForHims/" . basename($filename));
+        } catch (Exception $ex) {
+            echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
     }
 
@@ -71,6 +85,7 @@ class LISInfinity {
     }
 
 }
+
 /**
  * find ./ -type f -exec cp '{}' ../ResultForTheptarin/ \;
  * https://ubuntuforums.org/showthread.php?t=1385966
