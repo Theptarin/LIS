@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 30, 2019 at 05:46 PM
+-- Generation Time: Apr 28, 2019 at 11:19 AM
 -- Server version: 5.7.25-0ubuntu0.18.04.2
--- PHP Version: 7.2.10-0ubuntu0.18.04.1
+-- PHP Version: 7.2.15-0ubuntu0.18.04.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -29,7 +29,6 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `lis_result` (
-  `id` int(11) NOT NULL,
   `lis_number` varchar(20) NOT NULL,
   `lis_code` varchar(10) NOT NULL COMMENT 'รหัสการตรวจของ LIS',
   `test` varchar(200) NOT NULL COMMENT 'ชื่อผลตรวจ',
@@ -57,17 +56,7 @@ CREATE TABLE `lis_result` (
 -- Indexes for table `lis_result`
 --
 ALTER TABLE `lis_result`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `lis_result`
---
-ALTER TABLE `lis_result`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  ADD PRIMARY KEY (`lis_number`,`lis_code`,`result_code`) USING BTREE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

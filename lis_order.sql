@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 30, 2019 at 05:45 PM
+-- Generation Time: Apr 28, 2019 at 11:18 AM
 -- Server version: 5.7.25-0ubuntu0.18.04.2
--- PHP Version: 7.2.10-0ubuntu0.18.04.1
+-- PHP Version: 7.2.15-0ubuntu0.18.04.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -29,7 +29,6 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `lis_order` (
-  `id` int(11) NOT NULL,
   `message_date` datetime NOT NULL COMMENT 'Date/Time of Message',
   `patient_id` bigint(20) NOT NULL,
   `patient_name` varchar(200) NOT NULL COMMENT 'ชื่อ-สกุล',
@@ -53,17 +52,7 @@ CREATE TABLE `lis_order` (
 -- Indexes for table `lis_order`
 --
 ALTER TABLE `lis_order`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `lis_order`
---
-ALTER TABLE `lis_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  ADD PRIMARY KEY (`lis_number`,`reference_number`) USING BTREE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
