@@ -12,8 +12,8 @@ require_once 'HL7ToMySQL.php';
 
 class LISInfinity {
 
-    private $pathDoneTo = "/var/www/mount/hims-doc/lis/past/";
-    private $pathErrorTo = "/var/www/mount/hims-doc/lis/past/";
+    private $pathDoneTo = "/home/lis/History/";
+    private $pathErrorTo = "/home/lis/History/";
 
     /**
      * รับค่าพาธโฟลเดอร์ HL7
@@ -54,7 +54,7 @@ class LISInfinity {
      */
     private function copy_to_hims($filename) {
         try {
-            copy($filename, "/var/www/mount/hims-doc/lis/ResultForHims/" . basename($filename));
+            copy($filename, "/var/www/mount/hims-doc/lis/Result/" . basename($filename));
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
@@ -90,4 +90,5 @@ class LISInfinity {
  * find ./ -type f -exec cp '{}' ../ResultForTheptarin/ \;
  * https://ubuntuforums.org/showthread.php?t=1385966
  */
-$my = new LISInfinity("/var/www/mount/hims-doc/lis/ResultForTheptarin/*.hl7");
+//$my = new LISInfinity("/var/www/mount/hims-doc/lis/ResultForTheptarin/*.hl7");
+$my = new LISInfinity("/home/lis/Result/*.hl7");
