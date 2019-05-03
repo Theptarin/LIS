@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 28, 2019 at 11:19 AM
+-- Generation Time: May 03, 2019 at 06:18 PM
 -- Server version: 5.7.25-0ubuntu0.18.04.2
 -- PHP Version: 7.2.15-0ubuntu0.18.04.2
 
@@ -34,7 +34,7 @@ CREATE TABLE `lis_result` (
   `test` varchar(200) NOT NULL COMMENT 'ชื่อผลตรวจ',
   `lab_code` varchar(10) NOT NULL COMMENT 'รหัสการตรวจของ รพ.',
   `result_code` varchar(20) NOT NULL COMMENT 'รหัสผลการตรวจของ LIS',
-  `result` varchar(50) NOT NULL,
+  `result` varchar(300) NOT NULL,
   `unit` varchar(50) NOT NULL,
   `normal_range` varchar(100) NOT NULL,
   `technical_time` datetime NOT NULL COMMENT 'Date/time validation (Technical)',
