@@ -3,15 +3,13 @@
 require_once "HL7File.php";
 
 /**
- * Description of hl7_2_db
- * 
+ * นำเข้าข้อมูลจาก LIS Cobas IT1000
  * 1. อ่านไฟล์โดยใช้คลาส hl7
  * 2. เชื่อมฐานข้อมูล
- * 3. เพิ่มรายการใหม่ใน theptarin_utf8 lis_order lis_result lis_result_remark
- *
+ * 3. เพิ่มรายการใหม่ใน theptarin_utf8 lis_glu_order lis_glu_result
  * @author suchart bunhachirat
  */
-class HL7ToMySQL {
+class IT1000ToMySQL {
 
     private $path_filename;
     private $hl7;
@@ -23,12 +21,9 @@ class HL7ToMySQL {
      * @param string $path_filename
      */
     public function __construct($path_filename) {
-
-        //$path_filename = "./ext/lis/res/151008206007219.hl7"; //ชื่อภาษาไทย ต้องแปลงเป็น UTF8
-        //$path_filename = "./ext/lis/res/151010206004213.hl7"; //Lab เยอะ
         $this->path_filename = $path_filename;
         try {
-            $this->hl7 = new HL7File($path_filename);
+            $this->hl7 = new HL7File($path_filename, "\r");
             $this->insert_order();
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
@@ -55,16 +50,16 @@ class HL7ToMySQL {
     }
 
     /**
-     * เพิ่มรายการใหม่ใน lis_order
+     * เพิ่มรายการใหม่ใน lis_glu_order
      */
     protected function insert_order() {
         $this->get_conn();
         $message = $this->hl7->get_message();
-        $sql = "INSERT INTO lis_order (message_date, patient_id, patient_name, gender, birth_date, lis_number, reference_number, accept_time,request_div) VALUES (:message_date, :patient_id, :patient_name, :gender, :birth_date, :lis_number, :reference_number, :accept_time,:request_div) ON DUPLICATE KEY UPDATE message_date = :message_date , accept_time = :accept_time ";
+        $sql = "INSERT INTO lis_glu_order (message_date, patient_id, lis_number, reference_number, accept_time,request_div) VALUES (:message_date, :patient_id, :lis_number, :reference_number, :accept_time,:request_div) ON DUPLICATE KEY UPDATE message_date = :message_date , accept_time = :accept_time ";
         $stmt = $this->conn->prepare($sql);
 
         if ($stmt) {
-            $result = $stmt->execute(array(":message_date" => $message[0]->fields[5], ":patient_id" => $message[1]->fields[2], ":patient_name" => $message[1]->fields[4], ":gender" => $message[1]->fields[7], ":birth_date" => $message[1]->fields[6], ":lis_number" => $message[4]->fields[1], ":reference_number" => $message[3]->fields[1], ":accept_time" => $message[3]->fields[8], ":request_div" => substr($message[2]->fields[18], 3)));
+            $result = $stmt->execute(array(":message_date" => $message[0]->fields[5], ":patient_id" => $message[1]->fields[2], ":lis_number" => $message[4]->fields[1], ":reference_number" => $message[3]->fields[1], ":accept_time" => $message[3]->fields[8], ":request_div" => substr($message[2]->fields[18], 3)));
 
             if ($result) {
                 $this->read_result($message[4]->fields[1]);
@@ -108,7 +103,7 @@ class HL7ToMySQL {
     }
 
     /**
-     * เพิ่มรายการใหม่ใน lis_result
+     * เพิ่มรายการใหม่ใน lis_glu_result
      * @param int $lis_number
      * @param array $message
      * @return int
@@ -120,7 +115,7 @@ class HL7ToMySQL {
         /* @var $result_date DATE */
         $result_date = date('Y-m-d', strtotime($validation_time[1]));
 
-        $sql = "REPLACE INTO lis_result (lis_number, lis_code, test, lab_code, result_code , result,  unit, normal_range, user_id, technical_time, medical_time, result_date) VALUES (:lis_number, :lis_code, :test, :lab_code, :result_code, :result, :unit, :normal_range, :user_id, :technical_time, :medical_time, :result_date)";
+        $sql = "REPLACE INTO lis_glu_result (lis_number, lis_code, test, lab_code, result_code , result,  unit, normal_range, user_id, technical_time, medical_time, result_date) VALUES (:lis_number, :lis_code, :test, :lab_code, :result_code, :result, :unit, :normal_range, :user_id, :technical_time, :medical_time, :result_date)";
         $stmt = $this->conn->prepare($sql);
         /**
          * @todo  lab_type จากไฟล์ HL7 ไม่มี แต่แก้ไขให้มีในตารางตามเดิม
@@ -147,7 +142,7 @@ class HL7ToMySQL {
      */
     protected function insert_result_remark($lis_number, $lis_code, $remark) {
 
-        $sql = "UPDATE `lis_result` SET `remark`= :remark WHERE `lis_number` = :lis_number AND `lis_code` = :lis_code";
+        $sql = "UPDATE `lis_glu_result` SET `remark`= :remark WHERE `lis_number` = :lis_number AND `lis_code` = :lis_code";
         $stmt = $this->conn->prepare($sql);
 
         if ($stmt) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * การอ่านไฟล์ข้อมูลผลแลปผู้ป่วยจาก LIS Infinity
+ * การอ่านไฟล์ข้อมูลผลแลปผู้ป่วยจาก LIS (เพื่อนำเข้าข้อมูลย้อนหลัง ไม่ทำสำเนา HL7 ส่ง HIMs)
  * 1. อ่านไฟล์ HL7 ผลแลปอยู่ในโฟลเดอร์
  * 2. วิเคราะห์ไฟล์แยกส่วนข้อมูลเพื่อสามารถจัดเตรียมนำเข้าฐานข้อมูลได้
  * 3. ส่งข้อมูลเข้าฐานข้อมูล
@@ -12,8 +12,8 @@ require_once 'InfinityToMySQL.php';
 
 class LISInfinity {
 
-    private $pathDoneTo = "/home/lis/History/";
-    private $pathErrorTo = "/home/lis/History/";
+    private $pathDoneTo = "/home/it/lis/History/";
+    private $pathErrorTo = "/home/it/lis/History/";
 
     /**
      * รับค่าพาธโฟลเดอร์ HL7
@@ -38,25 +38,11 @@ class LISInfinity {
              * ย้ายไฟล์ตามสถานะ
              */
             if ($hl7_2_db->error_message == null) {
-                $this->copy_to_hims($filename);
                 $this->move_done_file($filename);
             } else {
-                $this->copy_to_hims($filename);
                 $this->move_error_file($filename);
                 echo $hl7_2_db->error_message . "\n";
             }
-        }
-    }
-
-    /**
-     * ส่งไฟล์ให้ HIMs
-     * @param string $filename
-     */
-    private function copy_to_hims($filename) {
-        try {
-            copy($filename, "/var/www/mount/hims-doc/lis/Result/" . basename($filename));
-        } catch (Exception $ex) {
-            echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
     }
 
@@ -86,9 +72,9 @@ class LISInfinity {
 
 }
 
-/**
- * find ./ -type f -exec cp '{}' ../ResultForTheptarin/ \;
+/**cd 
+ * find ./ -type f -exec cp '{}' ../ResultForImport/ \;
  * https://ubuntuforums.org/showthread.php?t=1385966
  */
 //$my = new LISInfinity("/var/www/mount/hims-doc/lis/ResultForTheptarin/*.hl7");
-$my = new LISInfinity("/home/lis/Result/*.hl7");
+$my = new LISInfinity("/home/it/ResultForImport/*.hl7");
