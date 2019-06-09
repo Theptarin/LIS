@@ -33,15 +33,14 @@ class LISInfinity {
 
         foreach ($list_files as $filename) {
             printf("$filename size " . filesize($filename) . "  " . date('Ymd H:i:s') . "\n");
+            $this->copy_to_hims($filename);
             $hl7_2_db = new InfinityToMySQL($filename);
             /**
              * ย้ายไฟล์ตามสถานะ
              */
             if ($hl7_2_db->error_message == null) {
-                $this->copy_to_hims($filename);
                 $this->move_done_file($filename);
             } else {
-                $this->copy_to_hims($filename);
                 $this->move_error_file($filename);
                 echo $hl7_2_db->error_message . "\n";
             }

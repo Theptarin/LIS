@@ -1,7 +1,7 @@
 <?php
 
 /**
- * การอ่านไฟล์ข้อมูลเจาะน้ำตาลปลายนิ้ว (เพื่อนำเข้าข้อมูลย้อนหลัง ไม่ทำสำเนา HL7 ส่ง HIMs)
+ * การอ่านไฟล์ข้อมูลเจาะน้ำตาลปลายนิ้ว
  * 1. อ่านไฟล์ HL7 ผลแลปอยู่ในโฟลเดอร์
  * 2. วิเคราะห์ไฟล์แยกส่วนข้อมูลเพื่อสามารถจัดเตรียมนำเข้าฐานข้อมูลได้
  * 3. ส่งข้อมูลเข้าฐานข้อมูล
@@ -9,13 +9,13 @@
  * @author สุชาติ บุญหชัยรัตน์ suchart bunhachirat <suchartbu@gmail.com>
  * @link https://drive.google.com/file/d/0B9r7oU4ZCTVJcnhteF9YSUF3Q0k/view?usp=sharing รายละเอียด HL7
  */
-require_once 'IT1000ToMySQL.php';
+require_once 'It1000ToMySQL.php';
 
 class LISIt1000 {
 
-    private $pathCopyTo = "/home/it/glu_copy/";
-    private $pathDoneTo = "/home/it/poct_glu/History/";
-    private $pathErrorTo = "/home/it/poct_glu/History/";
+    private $pathCopyTo = "/var/www/mount/hims-doc/cobas/RES/";
+    private $pathDoneTo = "/home/lis/it1000/";
+    private $pathErrorTo = "/home/lis/it1000/";
 
     /**
      * รับค่าพาธโฟลเดอร์ HL7
@@ -23,8 +23,8 @@ class LISIt1000 {
      */
     public function __construct($path_foder) {
         $list_files = glob($path_foder);
-        $this->pathDoneTo .= date('Ymd') . "/done";
-        $this->pathErrorTo .= date('Ymd') . "/error";
+        $this->pathDoneTo .= date('Ymd') . "/done/";
+        $this->pathErrorTo .= date('Ymd') . "/error/";
         if (!file_exists($this->pathDoneTo)) {
             mkdir($this->pathDoneTo, 0744, true);
         }
@@ -35,7 +35,7 @@ class LISIt1000 {
 
         foreach ($list_files as $filename) {
             printf("$filename size " . filesize($filename) . "  " . date('Ymd H:i:s') . "\n");
-            $this->copy_file($filename);
+            $this->copy_to_hims($filename);
             $hl7_2_db = new It1000ToMySQL($filename);
             /**
              * ย้ายไฟล์ตามสถานะ
@@ -48,17 +48,18 @@ class LISIt1000 {
             }
         }
     }
+
     /**
-     * คัดลอกไฟล์เพื่อสร้าง Request ที่ HIS
-     * @param type $filename
+     * ส่งไฟล์ให้ HIMs
+     * @param string $filename
      */
-    private function copy_file($filename){
+    private function copy_to_hims($filename) {
         try {
-            copy($filename, $this->pathCopyTo . "/" . basename($filename));
+            copy($filename, $this->pathCopyTo . basename($filename));
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
-        }
+    }
 
     /**
      * ย้ายไฟล์ที่ประมาลผลสำเร็จ
@@ -66,7 +67,7 @@ class LISIt1000 {
      */
     private function move_done_file($filename) {
         try {
-            rename($filename, $this->pathDoneTo . "/" . basename($filename));
+            rename($filename, $this->pathDoneTo . basename($filename));
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
@@ -78,7 +79,7 @@ class LISIt1000 {
      */
     private function move_error_file($filename) {
         try {
-            rename($filename, $this->pathErrorTo . "/" . basename($filename));
+            rename($filename, $this->pathErrorTo . basename($filename));
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";
         }
@@ -86,9 +87,9 @@ class LISIt1000 {
 
 }
 
-/**cd 
+/* * cd 
  * find ./ -type f -exec cp '{}' ../ResultForImport/ \;
  * https://ubuntuforums.org/showthread.php?t=1385966
  */
-//$my = new LISInfinity("/var/www/mount/hims-doc/lis/ResultForTheptarin/*.hl7");
-$my = new LISIt1000("/home/it/ResultForImport/*.HL7");
+$my = new LISIt1000("/var/www/mount/cobas-it-1000/his/RES/*.HL7");
+//$my = new LISIt1000("/home/it/ResultForImport/*.HL7");
