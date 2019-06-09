@@ -23,7 +23,7 @@ class InfinityToMySQL {
     public function __construct($path_filename) {
         $this->path_filename = $path_filename;
         try {
-            $this->hl7 = new HL7File($path_filename);
+            $this->hl7 = new HL7File($path_filename,"\r\n");
             $this->insert_order();
         } catch (Exception $ex) {
             echo 'Caught exception: ', $ex->getMessage(), "\n";

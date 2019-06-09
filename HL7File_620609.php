@@ -12,7 +12,7 @@ class HL7File {
      * เก็บอาเรย์จากสตริง HL7
      */
     private $lines = array();
-
+    
     /**
      * HL7 Segment name
      * @var array 
@@ -30,21 +30,21 @@ class HL7File {
     public $segment_count = array();
 
     /**
-     * @param type $filename
-     * @param type $line_ending Mac ('CR', "\r"),Unix ('LF', "\n"),Windows ('CRLF', "\r\n")
+     * ตรวจหา 'MSH' ส่วนแรกของสตริง HL7 Message
+     * @access protected
      */
-    public function __construct($filename, $line_ending) {
-        $this->load($filename, $line_ending);
+    public function __construct($filename) {
+        $this->load($filename);
     }
 
     /**
      * โหลดไฟล์ HL7
      */
-    public function load($filename, $line_ending) {
+    public function load($filename) {
         if (file_exists($filename)) {
             try {
                 $myfile = fopen($filename, "r");
-                $this->set_content(fread($myfile, filesize($filename)), $line_ending);
+                $this->set_content(fread($myfile, filesize($filename)));
                 fclose($myfile);
             } catch (Exception $ex) {
                 echo 'HL7 load exception: ', $ex->getMessage(), "\n";
@@ -55,14 +55,10 @@ class HL7File {
     }
 
     /**
-     * 
-     * @param type $string
-     * @param type $line_ending Carriage Return: Mac ('CR', "\r") Line Feed: Unix ('LF', "\n") Carriage Return and Line Feed: Windows ('CRLF', "\r\n")
-     * @var string 
-     * @throws Exception
+     * อ่านไฟล์ HL7
      */
-    protected function set_content($string, $line_ending) {
-        $this->lines = array_filter(explode($line_ending, $string));
+    protected function set_content($string) {
+        $this->lines = array_filter(explode("\r\n", $string));
 
         if (substr($this->lines[0], 0, 3) == 'MSH') {
             $i = 0;
@@ -85,7 +81,7 @@ class HL7File {
             throw new Exception('Invalid HL7 Message must start with MSH.');
         }
     }
-
+    
     /**
      * คืนค่า HL7Segment
      * @param integer $i
