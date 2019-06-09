@@ -91,5 +91,5 @@ class LISIt1000 {
  * find ./ -type f -exec cp '{}' ../ResultForImport/ \;
  * https://ubuntuforums.org/showthread.php?t=1385966
  */
-$my = new LISIt1000("/var/www/mount/cobas-it-1000/his/RES/*.HL7");
+$my = new LISIt1000("/var/www/mount/cobas-it-1000/his/RES/*.hl7");
 //$my = new LISIt1000("/home/it/ResultForImport/*.HL7");
