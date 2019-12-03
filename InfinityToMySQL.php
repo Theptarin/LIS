@@ -78,6 +78,7 @@ class InfinityToMySQL {
      */
     protected function read_result($lis_number) {
         $message = $this->hl7->get_message();
+        $lis_code = 0;
         /**
          * คำสั่งคัดเฉพาะ secment ที่ต้องการ
          */
@@ -87,17 +88,14 @@ class InfinityToMySQL {
              */
             switch ($value->name) {
                 case "OBX":
-                    if (!is_null($remark)) {
-                        $remark = $this->insert_result_remark($lis_number, $lis_code, $remark);
-                    }
+                    $remark = (!is_null($remark))?$this->insert_result_remark($lis_number, $lis_code, $remark):NUll;
                     $lis_code = $this->insert_result($lis_number, $value);
                     break;
                 case "NTE":
                     $remark .= $value->fields[2] . "\n";
                     break;
                 default :
-                    $lis_code = 0;
-                    $remark = NULL;
+                    $remark = (!is_null($remark))?$this->insert_result_remark($lis_number, $lis_code, $remark):NUll;
             }
         }
     }
